@@ -15,17 +15,25 @@ module.exports = (config) => {
     });
   }
 
-  service.put('/register/:servicename/:serviceversion/:serviceport', (req, res, next) => {
-    return next('Not implemented');
-  })
+  service.put('/register/:servicename/:serviceversion/:serviceport', (req, res) => {
+    const { servicename, serviceversion, serviceport } = req.params;
+    const serviceip = req.connection.remoteAddress.includes('::') ? `[${req.connection.remoteAddress}]` : req.connection.remoteAddress;
+    const serviceKey = serviceRegistry
+      .register(servicename, serviceversion, serviceip, serviceport);
+    return res.json({ result: serviceKey });
+  });
 
-  service.delete('/register/:servicename/:serviceversion/:serviceport', (req, res, next) => {
-    return next('Not implemented');
-  })
+  service.delete('/register/:servicename/:serviceversion/:serviceport', (req, res) => {
+    const { servicename, serviceversion, serviceport } = req.params;
+    const serviceip = req.connection.remoteAddress.includes('::') ? `[${req.connection.remoteAddress}]` : req.connection.remoteAddress;
+    const serviceKey = serviceRegistry
+      .unregister(servicename, serviceversion, serviceip, serviceport);
+    return res.json({ result: serviceKey });
+  });
 
   service.get('/find/:servicename/:serviceversion', (req, res, next) => {
     return next('Not implemented');
-  })
+  });
 
   // eslint-disable-next-line no-unused-vars
   service.use((error, req, res, next) => {
